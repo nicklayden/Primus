@@ -8,7 +8,7 @@ SRCS := main.cpp NodeTree.cpp Particle.cpp simulator.cpp \
 # SRC := main.cpp
 # SRCS := $(wildcard *.cpp)
 SRCDIR := src
-BINDIR := obj
+OBJDIR := obj
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS.o=.d)
 BINS := $(SRCS:.cpp=)
@@ -26,13 +26,13 @@ endif
 
 all: primus
 
-EXEOBJS = $(addprefix $(BINDIR)/, $(OBJS))
+EXEOBJS = $(addprefix $(OBJDIR)/, $(OBJS))
 
 # main program to build, and dependencies, along with compile statement
 primus: $(EXEOBJS)
 	$(CXX) -o primus $(EXEOBJS) $(CPPFLAGS)
 
-$(BINDIR)/%.o: $(SRCDIR)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 		$(CXX) $(CPPFLAGS) -c $< -o $@
 
 # depend: .depend
