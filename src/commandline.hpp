@@ -13,6 +13,7 @@
 
 int CommandLineSettings(int argc, char** argv,double* timestep,\
                         uint* Nparticles ,uint* Niterations ,float* theta,\
-                        float* softener, bool* stats, uint* freq, uint* fpsmax);
+                        float* softener, bool* stats, uint* freq, uint* fpsmax, \
+                        bool* drawNodes);
 
 #endif /* end of include guard: COMMANDLINE_HPP */

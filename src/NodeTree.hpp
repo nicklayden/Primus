@@ -52,6 +52,7 @@ class NodeTree
         double nodeMass; /// Total mass contained within current node.
         double nodeCOMx; /// center of mass of current node in x
         double nodeCOMy; /// center of mass of current node in y
+        std::vector<std::vector<double> > nodePositions;
         friend std::ostream& operator<<(std::ostream& out, const NodeTree& p)
         {
             /// Overloading << so that we can send print particle properties

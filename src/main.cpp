@@ -32,7 +32,6 @@
 #include "NodeTree.hpp"
 #include "Particle.hpp"
 #include "simulator.hpp"
-#include "integrator.hpp"
 #include "commandline.hpp"
 #include "gui.hpp"
 #include "OrbitalMechanics.hpp"
@@ -51,7 +50,8 @@ void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, do
 void makeCircularDisc2(Body_ctr& bodies, double r, double dr, double discmass, uint Nrngparticles);
 void infoPointers(std::vector<sf::Text*>& textptrs, sf::Font* font);
 void WindowDrawText(sf::RenderWindow* window, std::vector<sf::Text*> textpointers, std::vector<double> simvals);
-
+void EnterNodeTree(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
+void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
 /*Global parameters */
 
 
@@ -84,18 +84,21 @@ int main(int argc, char** argv)
   double y = -15*au;
 
   bool MonitorStats = false;
+  bool drawNodes = false;
   uint dumpfrequency = 10;
   uint fpsmax = 0;
+
+  std::vector<std::vector<double> > Nodes;
 
 
   // Capture command line arguments
   CommandLineSettings(argc, argv,&timestep,&Nrngparticles,&Niterations,&theta,\
-                      &softener, &MonitorStats, &dumpfrequency, &fpsmax);
+                      &softener, &MonitorStats, &dumpfrequency, &fpsmax, &drawNodes);
   /*--------------------------------------------------------------------------*/
   // Gui window parameters & setup
-  sf::RenderWindow window(sf::VideoMode(800,800), "N-Body Simulator");
+  sf::RenderWindow window(sf::VideoMode(1080,1080), "N-Body Simulator");
   sf::CircleShape temp(1e10);
-  sf::View SimView(sf::Vector2f(0,0), sf::Vector2f(w,h));
+  sf::View SimView(sf::Vector2f(0,0), sf::Vector2f(w/au,h/au));
   window.setPosition(sf::Vector2i(0,0));
   window.setView(SimView);
   if (fpsmax != 0) {
@@ -228,11 +231,11 @@ int main(int argc, char** argv)
       window2.clear(sf::Color::Black);
       /*-Integration steps-*/
       simulation.SimulateForces(true);
-      VerletStepOne(simulation.bodies, timestep, simulation.bodies.size());
+      VerletStepOne(simulation.bodies, simulation.itimestep, simulation.bodies.size());
       simulation.SimulateForces(false);
       forcesperstep.setString(NumberToString("Forces per step:",simulation.forceCounter,""));
       flop = simulation.forceCounter;
-      VerletStepTwo(simulation.bodies, timestep, simulation.bodies.size());
+      VerletStepTwo(simulation.bodies, simulation.itimestep, simulation.bodies.size());
       // Energy Monitoring
       if ( MonitorStats && k%dumpfrequency == 0) {
         KE = simulation.TotalKineticEnergy();
@@ -241,9 +244,16 @@ int main(int argc, char** argv)
         EnergyTracking << TotalEnergy << " " << k  << " " << KE << " " << PE << std::endl;
       }
       simulation.TotalForcesCalculated();
+
       /*-Drawing steps-*/
+      // std::cout << "Number of Nodes: " << Nodes.size() << '\n';
+      if (drawNodes){
+        // Get node box dimensions
+        EnterNodeTree(Nodes, &GlobalNode);
+        DrawBoxes(&window, Nodes);
+      }
       DrawParticles(&window,simulation.bodies);
-      window.draw(textStep);
+      // window.draw(textStep);
       window.display();
       textStep.setString(NumberToString("Timestep:",k," "));
 
@@ -269,6 +279,9 @@ int main(int argc, char** argv)
       window2.draw(flopsTimer);
       // WindowDrawText(&window2,textpointers,simvalues);
       window2.display();
+      if (drawNodes) {
+        Nodes.clear();
+      }
       k++;
       simulation.forceCounter = 0;
   }
@@ -536,4 +549,31 @@ void WindowDrawText(sf::RenderWindow* window, std::vector<sf::Text*> textpointer
     // *textpointers[i] = simvalues
     window->draw(*textpointers[i]);
   }
+}
+void EnterNodeTree(std::vector<std::vector<double> >& nodes, NodeTree* NODE)
+{
+  //  Re-implement as member to NodeTree? Probably.
+  // Enter from the toplevel node, and recursively add each Box's dimensions
+  // to the nodes vector.
+  for (size_t i = 0; i < NODE->ChildNode.size(); i++) {
+    GetBoxDimensions(nodes,NODE->ChildNode[i]);
+  }
+}
+
+void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE)
+{
+  // Gets the dimensions of every Node box in the Barnes Hut Tree.
+  std::vector<double> temp;
+  temp.push_back(NODE->nodexLocation);
+  temp.push_back(NODE->nodeyLocation);
+  temp.push_back(NODE->nodeWidth);
+  temp.push_back(NODE->nodeHeight);
+  // Only pick out external nodes for now. (Boxes around particles only)
+  // if (NODE->nodeBodies.size() == 1) {
+    nodes.push_back(temp);
+  // }
+  if ( NODE->treeDepth < 60) {
+    EnterNodeTree(nodes, NODE);
+  }
+
 }

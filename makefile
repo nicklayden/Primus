@@ -36,7 +36,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 		$(CXX) $(CPPFLAGS) -c $< -o $@
 
 # depend: .depend
-
+#
 # .depend: $(SRCDIR)/$(SRCS)
 # 	$(RM) ./.depend
 # 	$(CXX) $(CPPFLAGS) -MM src/$^>>./.depend;
@@ -48,3 +48,4 @@ clean:
 
 # I broke the dependency creator bit when I moved to the multifile system.
 # include .depend
+# DO NOT DELETE

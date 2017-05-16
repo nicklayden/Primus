@@ -70,7 +70,7 @@ void Simulator::ForceSum(bool CheckTimestep)
       dt = 1e-1*vel/accel;
     }
     mindt = std::min(mindt,dt);
-    // mindt = std::max(mindt,hardmindt);
+    mindt = std::max(mindt,hardmindt);
   }
   // update timestep for simulation.
   if (CheckTimestep) {

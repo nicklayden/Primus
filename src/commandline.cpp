@@ -13,7 +13,7 @@ namespace {
 
 namespace po = boost::program_options;
 
-int CommandLineSettings(int argc, char** argv,double* timestep,uint* Nparticles ,uint* Niterations ,float* theta,float* softener, bool* stats, uint* freq, uint* fpsmax)
+int CommandLineSettings(int argc, char** argv,double* timestep,uint* Nparticles ,uint* Niterations ,float* theta,float* softener, bool* stats, uint* freq, uint* fpsmax, bool* drawNodes)
 {
   // Defining and parsing the program options from command line.
   // note: a,b,c options show how to capture a command line value directly
@@ -26,9 +26,10 @@ int CommandLineSettings(int argc, char** argv,double* timestep,uint* Nparticles 
     (",T", po::value<uint>(Niterations), "Total number of iterations to do. Measured in days.")
     ("theta,t", po::value<float>(theta), "Value of theta to use for Barnes Hut Simulation.")
     ("softener,s", po::value<float>(softener), "Gravitational softening parameter to use (meters). default is 1e4")
-    ("stats,me", po::value<bool>(stats), "Flag to monitor simulation stats like Energy and momentum")
+    ("stats,m", po::value<bool>(stats), "Flag to monitor simulation stats like Energy and momentum")
     ("dumpfreq,f", po::value<uint>(freq), "Frequency with which to record stats. Measured in 1/steps")
-    ("fps", po::value<uint>(fpsmax), "Maximum fps for SFML window playback. Also limits maximum program execution speed.");
+    ("fps", po::value<uint>(fpsmax), "Maximum fps for SFML window playback. Also limits maximum program execution speed.")
+    ("draw", po::value<bool>(drawNodes), "Draws Barnes Hut external nodes on the window if true.");
     // ADD OPTIONS FOR FILE OUTPUTS.
     // (",d", po::value<double>(&d)->required(), "variable 'd' is double, required.");
 

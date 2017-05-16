@@ -74,6 +74,10 @@ void NodeTree::createSubNode(Body_ctr childBodies, double width, double height, 
     // std::ofstream nodefile("nodepositions.txt", std::fstream::app);
     // std::ofstream comfile("compositions.txt", std::fstream::app);
     // nodefile << xpos << ' ' << ypos << ' ' << width << ' ' << height << ' ' << childBodies.size() << ' ' << treeDepth <<std::endl;
+    // std::vector<double> nodexywh;
+    // nodexywh.push_back(xpos); nodexywh.push_back(ypos); nodexywh.push_back(width);
+    // nodexywh.push_back(height); nodexywh.push_back(childBodies.size());
+    // nodePositions.push_back(nodexywh);
     this->nodeBodies = childBodies;
     this->nodexLocation = xpos;
     this->nodeyLocation = ypos;
