@@ -6,6 +6,12 @@ Primus now uses SFML for real-time rendering of the simulation. It is built to b
 
 A CUDA accelerated version of the program will be added eventually. Currently, cuda is a bit of a nightmare to work with across systems.
 
+## Example gif
+Just a small gif showing the underlying Barnes hut tree, along with the Particles in the simulation. This one includes:
+Mars, Earth, Sun, and Jupiter, as well as 10 "asteroid" sized particles.
+
+
+
 ## Installation
 Clone this repository
 ```
