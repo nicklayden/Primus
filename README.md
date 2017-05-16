@@ -9,7 +9,7 @@ A CUDA accelerated version of the program will be added eventually. Currently, c
 ## Example gif
 Just a small gif showing the underlying Barnes hut tree, along with the Particles in the simulation. This one includes:
 Mars, Earth, Sun, and Jupiter, as well as 10 "asteroid" sized particles.
-
+![alt text](https://github.com/nicklayden/Primus/blob/master/Peek%202017-05-15%2023-55.gif "Nbody Simulation")
 
 
 ## Installation
