@@ -52,6 +52,7 @@ void infoPointers(std::vector<sf::Text*>& textptrs, sf::Font* font);
 void WindowDrawText(sf::RenderWindow* window, std::vector<sf::Text*> textpointers, std::vector<double> simvals);
 void EnterNodeTree(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
 void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
+void FixSunMomentum(Body_ctr bodies);
 /*Global parameters */
 
 
@@ -199,6 +200,8 @@ int main(int argc, char** argv)
   makeCircularDisc(bodies,5.1*au,0.2*au,1e15,1e18,Nrngparticles);
   makeCircularDisc(bodies,1.5*au,3.6*au,1e18,1.1e20,Nrngparticles);
   // initParticleDisk(bodies,7*au,1*au,1e18,1e20,Nrngparticles);
+  // Fix solar momentum to conserve.
+  FixSunMomentum(bodies);
 
   // // Initialize Simulation object
   Simulator simulation(&GlobalNode,bodies,theta,timestep,G, softener,w,h,x,y);
@@ -216,7 +219,16 @@ int main(int argc, char** argv)
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window.close();
+      } else if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::A && drawNodes == true) {
+          drawNodes = false;
+        } else if (event.key.code == sf::Keyboard::A && drawNodes == false) {
+          drawNodes = true;
+        }
       }
+
+
+
     } // end event check
     while (window2.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
@@ -569,11 +581,37 @@ void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE)
   temp.push_back(NODE->nodeWidth);
   temp.push_back(NODE->nodeHeight);
   // Only pick out external nodes for now. (Boxes around particles only)
-  // if (NODE->nodeBodies.size() == 1) {
+  // if (NODE->nodeBodies.size() >= 1) {
     nodes.push_back(temp);
   // }
   if ( NODE->treeDepth < 60) {
     EnterNodeTree(nodes, NODE);
   }
+}
 
+void FixSunMomentum(Body_ctr bodies)
+{
+  // Function that makes sure all initial momentum created in the system is constant
+  // So that the sun doesn't drift from the center of the simulation.
+  // the sun's momentum should balance all of the bodies in the solar system,
+  // so the total momentum is zero.
+  // p_sun + sum(p_i) = 0,  i = (1,N) for all N particles minus the sun.
+  // thus: p_sun = -sum(p_i)
+  // Vector equations:
+  // components: m_sun[(v_xs)i + (v_ys)j] = -sum(M_i[(v_xi)i + (v_yi)j])
+  double vx_sun = 0;
+  double vy_sun = 0;
+  std::cout << "Fixing Sun's momentum." << '\n';
+  for (size_t i = 0; i < bodies.size()-1; i++) {
+    vx_sun -= (bodies[i]->mass * bodies[i]->vx);
+    vy_sun -= (bodies[i]->mass * bodies[i]->vy);
+  }
+  vx_sun /= solar_mass;
+  vy_sun /= solar_mass;
+  if (bodies[0]->name == "Sun") {
+    bodies[0]->vx = vx_sun;
+    bodies[0]->vy = vy_sun;
+    std::cout << "Sun's new velocity: ";
+    std::cout << "v = (" << vx_sun << ")i + (" << vy_sun << ")j" << " (m/s)\n";
+  }
 }
