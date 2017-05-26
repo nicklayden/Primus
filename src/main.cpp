@@ -38,21 +38,22 @@
 
 
 /*Prototypes -- move to header file*/
-double unirandomval(double min, double max);
-double normrandomval(double mean, double variance);
+// double unirandomval(double min, double max);
+// double normrandomval(double mean, double variance);
 void VerletStepOne(Body_ctr bodies, double timestep, uint Nparticles);
 void VerletStepTwo(Body_ctr bodies, double timestep, uint Nparticles);
-void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
-void InitDoubleBinarySystem(Body_ctr& bodies);
-void SpawnSolarSystemPlanets(Body_ctr& bodies);
+// void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
+// void InitDoubleBinarySystem(Body_ctr& bodies);
+// void SpawnSolarSystemPlanets(Body_ctr& bodies);
 void singleLeap(Body_ctr bodies, double timestep);
-void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
-void makeCircularDisc2(Body_ctr& bodies, double r, double dr, double discmass, uint Nrngparticles);
+// void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
+// void makeCircularDisc2(Body_ctr& bodies, double r, double dr, double discmass, uint Nrngparticles);
 void infoPointers(std::vector<sf::Text*>& textptrs, sf::Font* font);
 void WindowDrawText(sf::RenderWindow* window, std::vector<sf::Text*> textpointers, std::vector<double> simvals);
 void EnterNodeTree(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
 void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
-void FixSunMomentum(Body_ctr bodies);
+// void FixSunMomentum(Body_ctr bodies);
+void nullifyMergedParticles(Body_ctr& bodies);
 /*Global parameters */
 
 
@@ -85,7 +86,8 @@ int main(int argc, char** argv)
   double y = -15*au;
 
   bool MonitorStats = false;
-  bool drawNodes = false;
+  bool drawNodes = true;
+  bool displayStats = true;
   uint dumpfrequency = 10;
   uint fpsmax = 0;
 
@@ -93,24 +95,20 @@ int main(int argc, char** argv)
 
 
   // Capture command line arguments
+
   CommandLineSettings(argc, argv,&timestep,&Nrngparticles,&Niterations,&theta,\
                       &softener, &MonitorStats, &dumpfrequency, &fpsmax, &drawNodes);
   /*--------------------------------------------------------------------------*/
   // Gui window parameters & setup
   sf::RenderWindow window(sf::VideoMode(1080,1080), "N-Body Simulator");
   sf::CircleShape temp(1e10);
-  sf::View SimView(sf::Vector2f(0,0), sf::Vector2f(w/au,h/au));
+  sf::View SimView(sf::Vector2f(0,0), sf::Vector2f(w,h));
+  sf::View StatsView;
   window.setPosition(sf::Vector2i(0,0));
   window.setView(SimView);
   if (fpsmax != 0) {
     window.setFramerateLimit(fpsmax);
   }
-  // Window 2 for text:
-  sf::RenderWindow window2(sf::VideoMode(500,150), "Real-time Parameters");
-  window2.setPosition(sf::Vector2i(800,0));
-  // sf::View SimView2(sf::Vector2f(0,0), sf::Vector2f(100,100));
-  // window2.setView(SimView2);
-  // window2.setFramerateLimit(60);
 
 
   /*--------------------------------------------------------------------------*/
@@ -128,27 +126,27 @@ int main(int argc, char** argv)
   textStep.setFont(font);
   textStep.setString("Test");
   textStep.setCharacterSize(12);
-  textStep.setColor(sf::Color::Red);
+  textStep.setColor(sf::Color::White);
 
   sf::Text timer;
   timer.setFont(font);
   timer.setString("0");
   timer.setCharacterSize(12);
-  timer.setColor(sf::Color::Red);
+  timer.setColor(sf::Color::White);
   timer.setPosition(0,12);
 
   sf::Text simspeed;
   simspeed.setFont(font);
   simspeed.setString("0");
   simspeed.setCharacterSize(12);
-  simspeed.setColor(sf::Color::Red);
+  simspeed.setColor(sf::Color::White);
   simspeed.setPosition(0,24);
 
   sf::Text simtimetext;
   simtimetext.setFont(font);
   simtimetext.setString("0");
   simtimetext.setCharacterSize(12);
-  simtimetext.setColor(sf::Color::Red);
+  simtimetext.setColor(sf::Color::White);
   simtimetext.setPosition(0,36);
 
 
@@ -156,36 +154,37 @@ int main(int argc, char** argv)
   forcesperstep.setFont(font);
   forcesperstep.setString("0");
   forcesperstep.setCharacterSize(12);
-  forcesperstep.setColor(sf::Color::Red);
+  forcesperstep.setColor(sf::Color::White);
   forcesperstep.setPosition(0,48);
 
   sf::Text flopsTimer;
   flopsTimer.setFont(font);
   flopsTimer.setString("0");
   flopsTimer.setCharacterSize(12);
-  flopsTimer.setColor(sf::Color::Red);
+  flopsTimer.setColor(sf::Color::White);
   flopsTimer.setPosition(0,60);
 
   sf::Text currentTimestep;
   currentTimestep.setFont(font);
   currentTimestep.setString("0");
   currentTimestep.setCharacterSize(12);
-  currentTimestep.setColor(sf::Color::Red);
+  currentTimestep.setColor(sf::Color::White);
   currentTimestep.setPosition(0,72);
 
   sf::Text timeChanges;
   timeChanges.setFont(font);
   timeChanges.setString("0");
   timeChanges.setCharacterSize(12);
-  timeChanges.setColor(sf::Color::Red);
+  timeChanges.setColor(sf::Color::White);
   timeChanges.setPosition(0,84);
 
   sf::Text maxchanges;
   maxchanges.setFont(font);
   maxchanges.setString("0");
   maxchanges.setCharacterSize(12);
-  maxchanges.setColor(sf::Color::Red);
+  maxchanges.setColor(sf::Color::White);
   maxchanges.setPosition(0,96);
+
 
   /*--------------------------------------------------------------------------*/
   // File streams
@@ -197,50 +196,49 @@ int main(int argc, char** argv)
   Body_ctr bodies;
   SpawnSolarSystemPlanets(bodies);
   // InitDoubleBinarySystem(bodies);
-  makeCircularDisc(bodies,5.1*au,0.2*au,1e15,1e18,Nrngparticles);
-  makeCircularDisc(bodies,1.5*au,3.6*au,1e18,1.1e20,Nrngparticles);
-  // initParticleDisk(bodies,7*au,1*au,1e18,1e20,Nrngparticles);
+  makeCircularDisc(bodies,5.0*au,0.2*au,1e18,1e20,Nrngparticles);
+  makeCircularDisc(bodies,1.5*au,3.5*au,1e20,1.1e20,Nrngparticles);
+  // initParticleDisk(bodies,2*au,8*au,1e18,1e20,Nrngparticles);
   // Fix solar momentum to conserve.
   FixSunMomentum(bodies);
 
   // // Initialize Simulation object
   Simulator simulation(&GlobalNode,bodies,theta,timestep,G, softener,w,h,x,y);
   simulation.Parameters();
+  // SFMLDisplay testwindow(&simulation, &font);
   /*--------------------------------------------------------------------------*/
-  /*
-    IMPORTANT: Currently, the for loop in the event loop doesn't do anything.
-    The simulation runs continuously until the window is closed.
-    --Shitty fix with a break statement when k increments past Niterations.
-  */
+
   auto begintimeclock = Clock::now();
-  while (window.isOpen() && window2.isOpen()) {
+  while (window.isOpen()) {
     //Check window events that have occurred since the last iteration.
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window.close();
+        // KEYPRESS EVENTS
       } else if (event.type == sf::Event::KeyPressed) {
+        // Keyboard handling
+          // A key
         if (event.key.code == sf::Keyboard::A && drawNodes == true) {
           drawNodes = false;
         } else if (event.key.code == sf::Keyboard::A && drawNodes == false) {
           drawNodes = true;
+          // S key
+        } else if (event.key.code == sf::Keyboard::S && displayStats == true) {
+          displayStats = false;
+        } else if (event.key.code == sf::Keyboard::S && displayStats == false) {
+          displayStats = true;
         }
       }
-
-
-
     } // end event check
-    while (window2.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        window2.close();
-      }
-    } // end event check
+
     /*------------------------------------------------------------------------*/
 
     // Main simulation loop.
       auto beginsimloop = Clock::now();
+      // Reset view to simulation boundary
+      window.setView(SimView);
       window.clear(sf::Color::Black);
-      window2.clear(sf::Color::Black);
       /*-Integration steps-*/
       simulation.SimulateForces(true);
       VerletStepOne(simulation.bodies, simulation.itimestep, simulation.bodies.size());
@@ -248,6 +246,8 @@ int main(int argc, char** argv)
       forcesperstep.setString(NumberToString("Forces per step:",simulation.forceCounter,""));
       flop = simulation.forceCounter;
       VerletStepTwo(simulation.bodies, simulation.itimestep, simulation.bodies.size());
+      // Check particles with type=0 and zero all parameters.
+      // nullifyMergedParticles(bodies);
       // Energy Monitoring
       if ( MonitorStats && k%dumpfrequency == 0) {
         KE = simulation.TotalKineticEnergy();
@@ -266,7 +266,6 @@ int main(int argc, char** argv)
       }
       DrawParticles(&window,simulation.bodies);
       // window.draw(textStep);
-      window.display();
       textStep.setString(NumberToString("Timestep:",k," "));
 
       auto endtime = Clock::now();
@@ -278,19 +277,22 @@ int main(int argc, char** argv)
       flopsTimer.setString(NumberToString("Forces/s:",flop/looptime,""));
       simtimetext.setString(NumberToString("sim time:",simtimer,"s"));
       currentTimestep.setString(NumberToString("Current timestep:",simulation.itimestep,"s"));
-      timeChanges.setString(NumberToString("Time changeS:",simulation.timechanges,""));
-      maxchanges.setString(NumberToString("Max changes (sqrt(steps)):",sqrt(k),""));
-      window2.draw(maxchanges);
-      window2.draw(currentTimestep);
-      window2.draw(timeChanges);
-      window2.draw(timer);
-      window2.draw(simtimetext);
-      window2.draw(simspeed);
-      window2.draw(textStep);
-      window2.draw(forcesperstep);
-      window2.draw(flopsTimer);
-      // WindowDrawText(&window2,textpointers,simvalues);
-      window2.display();
+      timeChanges.setString(NumberToString("Time changes:",simulation.timechanges,""));
+      maxchanges.setString(NumberToString("Suggested max timestep changes (sqrt(steps)):",sqrt(k),""));
+      // View the statistics on screen.
+      if (displayStats) {
+        window.setView(StatsView);
+        window.draw(maxchanges);
+        window.draw(currentTimestep);
+        window.draw(timeChanges);
+        window.draw(timer);
+        window.draw(simtimetext);
+        window.draw(simspeed);
+        window.draw(textStep);
+        window.draw(forcesperstep);
+        window.draw(flopsTimer);
+      }
+      window.display();
       if (drawNodes) {
         Nodes.clear();
       }
@@ -306,8 +308,6 @@ int main(int argc, char** argv)
     delete bodies[i];
   }
 }
-
-
 
 void VerletStepOne(Body_ctr bodies, double timestep, uint Nparticles)
 {
@@ -347,48 +347,50 @@ void singleLeap(Body_ctr bodies, double timestep)
   }
 }
 
-void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
-{
-  // initializes particles in a uniform disk between r and r+dr
-  // with masses m+dm, and velocities +/- 5000 m/s
-  double rx, ry, radius, mass, angle, randomVel, randomVx, randomVy, angle2;
-  for (size_t i = 0; i < Nrngparticles; i++) {
-      // cout <<"\rSpawning particle " << i+1 << " out of " << Nrngparticles << "   ";
-      // cout.flush();
-      radius = unirandomval(r, r+dr);
-      angle = unirandomval(0,2*pi);
-      angle2 = unirandomval(0,2*pi);
-      mass = unirandomval(mass_min, mass_max);
-      randomVel = 30000*unirandomval(-1,1);
-      randomVx = randomVel*cos(angle2);
-      randomVy = randomVel*sin(angle2);
-      rx = radius*cos(angle);
-      ry = radius*sin(angle);
-      Particle* obj = new Particle(rx,ry,randomVx,randomVy,mass,2000);
-      bodies.push_back(obj);
-   }
-}
-
-void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
-{
-  // initializes particles in a uniform disk between r and r+dr
-  // with masses m+dm, and velocities +/- 5000 m/s
-  double rx, ry, radius, mass, angle, orbvel, vx, vy;
-  for (size_t i = 0; i < Nrngparticles; i++) {
-      // cout <<"\rSpawning particle " << i+1 << " out of " << Nrngparticles << "   ";
-      // cout.flush();
-      radius = unirandomval(r, r+dr);
-      angle = unirandomval(0,2*pi);
-      rx = radius*cos(angle);
-      ry = radius*sin(angle);
-      orbvel = CircularVelocity(G,solar_mass,radius);
-      vx = -orbvel*sin(angle);
-      vy = orbvel*cos(angle);
-      mass = unirandomval(mass_min, mass_max);
-      Particle* obj = new Particle(rx,ry,vx,vy,mass,2000);
-      bodies.push_back(obj);
-   }
-}
+// void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
+// {
+//   // initializes particles in a uniform disk between r and r+dr
+//   // with masses m+dm, and velocities +/- 5000 m/s
+//   double rx, ry, radius, mass, angle, randomVel, randomVx, randomVy, angle2;
+//   for (size_t i = 0; i < Nrngparticles; i++) {
+//       // cout <<"\rSpawning particle " << i+1 << " out of " << Nrngparticles << "   ";
+//       // cout.flush();
+//       radius = unirandomval(r, r+dr);
+//       angle = unirandomval(0,2*pi);
+//       angle2 = unirandomval(0,2*pi);
+//       mass = unirandomval(mass_min, mass_max);
+//       randomVel = 30000*unirandomval(-1,1);
+//       // randomVx = randomVel*cos(angle2);
+//       // randomVy = randomVel*sin(angle2);
+//       randomVx = 0;
+//       randomVy = 0;
+//       rx = radius*cos(angle);
+//       ry = radius*sin(angle);
+//       Particle* obj = new Particle(rx,ry,randomVx,randomVy,mass,2000);
+//       bodies.push_back(obj);
+//    }
+// }
+//
+// void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
+// {
+//   // initializes particles in a uniform disk between r and r+dr
+//   // with masses m+dm, and velocities +/- 5000 m/s
+//   double rx, ry, radius, mass, angle, orbvel, vx, vy;
+//   for (size_t i = 0; i < Nrngparticles; i++) {
+//       // cout <<"\rSpawning particle " << i+1 << " out of " << Nrngparticles << "   ";
+//       // cout.flush();
+//       radius = unirandomval(r, r+dr);
+//       angle = unirandomval(0,2*pi);
+//       rx = radius*cos(angle);
+//       ry = radius*sin(angle);
+//       orbvel = CircularVelocity(G,solar_mass,radius);
+//       vx = -orbvel*sin(angle);
+//       vy = orbvel*cos(angle);
+//       mass = unirandomval(mass_min, mass_max);
+//       Particle* obj = new Particle(rx,ry,vx,vy,mass,2000);
+//       bodies.push_back(obj);
+//    }
+// }
 
 // void makeCircularDisc2(Body_ctr& bodies, double r, double dr, double discmass, uint Nrngparticles)
 // {
@@ -408,76 +410,76 @@ void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, do
 //    }
 // }
 
-double unirandomval(double min, double max)
-{
-  /// This function uses a Mersenne Twister to generate
-  /// a uniform real distribution between min and max
-  std::random_device rand_device;
-  std::mt19937 gen(rand_device());
-  std::uniform_real_distribution<double> distr(min, max);
-  return distr(gen);
-}
+// double unirandomval(double min, double max)
+// {
+//   /// This function uses a Mersenne Twister to generate
+//   /// a uniform real distribution between min and max
+//   std::random_device rand_device;
+//   std::mt19937 gen(rand_device());
+//   std::uniform_real_distribution<double> distr(min, max);
+//   return distr(gen);
+// }
+//
+// double normrandomval(double mean, double variance)
+// {
+//   std::random_device rand_device;
+//   std::mt19937 gen(rand_device());
+//   std::normal_distribution<double> distr(mean,variance);
+//   return distr(gen);
+// }
 
-double normrandomval(double mean, double variance)
-{
-  std::random_device rand_device;
-  std::mt19937 gen(rand_device());
-  std::normal_distribution<double> distr(mean,variance);
-  return distr(gen);
-}
-
-void SpawnSolarSystemPlanets(Body_ctr& bodies)
-{
-  // Particles here NEED to be dynamically allocated!!!!
-  // Stack memory allocated here is freed upon exiting the function.
-  // That obviously results in a SEGFAULT when the main program tries to use
-  // the addresses inside this function.
-
-  // Particle* Moon = new Particle(moon_init_pos,0,0,moon_tangent_vel,moon_mass, moon_density);
-  // Moon->name = "Moon";
-  using namespace Planets;
-
-  Particle* Earth = new Particle(au,0,0,earth_tangent_vel,earth_mass,earth_density);
-  Earth->name = "Earth";
-
-  Particle* Mars = new Particle(mars::aphelion*au,0,0,mars::v_aphelion,mars::mass,2);
-  Mars->name = "Mars";
-
-  Particle* Sun = new Particle(0,0,0,0,solar_mass,solar_density);
-  // Sun->fixedPosition = true;
-  Sun->name = "Sun";
-
-  Particle* Jupiter = new Particle(jupiter_aphelion,0,0,jupiter_v_ap,jupiter_mass,jupiter_density);
-  Jupiter->name = "Jupiter";
-
-  bodies.push_back(Sun);
-  bodies.push_back(Earth);
-  bodies.push_back(Jupiter);
-  bodies.push_back(Mars);
-
-}
-
-void InitDoubleBinarySystem(Body_ctr& bodies)
-{
-  // Creates a system where a binary star system is bound to another binary
-  // star system. Thus making this, a quadrinary(?) star system.
-  // Got this idea from Chris MacMackin's program A'tuin.
-  Particle* s1 = new Particle(au,-5e-2*au,21061,66601,solar_mass,2);
-  s1->name = "s1";
-  std::cout << "radius: " << s1->radius << std::endl;
-  Particle* s2 = new Particle(au,5e-2*au,-21061,66601,solar_mass,2);
-  s2->name = "s2";
-  Particle* s3 = new Particle(-au,-5e-2*au,21061,-66601,solar_mass,2);
-  s3->name = "s3";
-  Particle* s4 = new Particle(-au,5e-2*au,-21061,-66601,solar_mass,2);
-  s4->name = "s4";
-  std::cout << "particles: " << bodies.size() << std::endl;
-  // bodies.push_back(Sun);
-  bodies.push_back(s1);
-  bodies.push_back(s2);
-  bodies.push_back(s3);
-  bodies.push_back(s4);
-}
+// void SpawnSolarSystemPlanets(Body_ctr& bodies)
+// {
+//   // Particles here NEED to be dynamically allocated!!!!
+//   // Stack memory allocated here is freed upon exiting the function.
+//   // That obviously results in a SEGFAULT when the main program tries to use
+//   // the addresses inside this function.
+//
+//   // Particle* Moon = new Particle(moon_init_pos,0,0,moon_tangent_vel,moon_mass, moon_density);
+//   // Moon->name = "Moon";
+//   using namespace Planets;
+//
+//   Particle* Earth = new Particle(au,0,0,earth_tangent_vel,earth_mass,earth_density);
+//   Earth->name = "Earth";
+//
+//   Particle* Mars = new Particle(mars::aphelion*au,0,0,mars::v_aphelion,mars::mass,2);
+//   Mars->name = "Mars";
+//
+//   Particle* Sun = new Particle(0,0,0,0,solar_mass*1e9,solar_density);
+//   // Sun->fixedPosition = true;
+//   Sun->name = "Sun";
+//
+//   Particle* Jupiter = new Particle(jupiter_aphelion,0,0,jupiter_v_ap,jupiter_mass,jupiter_density);
+//   Jupiter->name = "Jupiter";
+//
+//   bodies.push_back(Sun);
+//   // bodies.push_back(Earth);
+//   // bodies.push_back(Jupiter);
+//   // bodies.push_back(Mars);
+//
+// }
+//
+// void InitDoubleBinarySystem(Body_ctr& bodies)
+// {
+//   // Creates a system where a binary star system is bound to another binary
+//   // star system. Thus making this, a quadrinary(?) star system.
+//   // Got this idea from Chris MacMackin's program A'tuin.
+//   Particle* s1 = new Particle(au,-5e-2*au,21061,66601,solar_mass,2);
+//   s1->name = "s1";
+//   std::cout << "radius: " << s1->radius << std::endl;
+//   Particle* s2 = new Particle(au,5e-2*au,-21061,66601,solar_mass,2);
+//   s2->name = "s2";
+//   Particle* s3 = new Particle(-au,-5e-2*au,21061,-66601,solar_mass,2);
+//   s3->name = "s3";
+//   Particle* s4 = new Particle(-au,5e-2*au,-21061,-66601,solar_mass,2);
+//   s4->name = "s4";
+//   std::cout << "particles: " << bodies.size() << std::endl;
+//   // bodies.push_back(Sun);
+//   bodies.push_back(s1);
+//   bodies.push_back(s2);
+//   bodies.push_back(s3);
+//   bodies.push_back(s4);
+// }
 
 void infoPointers(std::vector<sf::Text*>& textptrs, sf::Font* font)
 {
@@ -562,6 +564,7 @@ void WindowDrawText(sf::RenderWindow* window, std::vector<sf::Text*> textpointer
     window->draw(*textpointers[i]);
   }
 }
+
 void EnterNodeTree(std::vector<std::vector<double> >& nodes, NodeTree* NODE)
 {
   //  Re-implement as member to NodeTree? Probably.
@@ -581,37 +584,51 @@ void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE)
   temp.push_back(NODE->nodeWidth);
   temp.push_back(NODE->nodeHeight);
   // Only pick out external nodes for now. (Boxes around particles only)
-  // if (NODE->nodeBodies.size() >= 1) {
+  // if (NODE->nodeBodies.size() == (1 | 0))  {
     nodes.push_back(temp);
   // }
   if ( NODE->treeDepth < 60) {
     EnterNodeTree(nodes, NODE);
   }
 }
+//
+// void FixSunMomentum(Body_ctr bodies)
+// {
+//   // Function that makes sure all initial momentum created in the system is constant
+//   // So that the sun doesn't drift from the center of the simulation.
+//   // the sun's momentum should balance all of the bodies in the solar system,
+//   // so the total momentum is zero.
+//   // p_sun + sum(p_i) = 0,  i = (1,N) for all N particles minus the sun.
+//   // thus: p_sun = -sum(p_i)
+//   // Vector equations:
+//   // components: m_sun[(v_xs)i + (v_ys)j] = -sum(M_i[(v_xi)i + (v_yi)j])
+//   double vx_sun = 0;
+//   double vy_sun = 0;
+//   std::cout << "Fixing Sun's momentum." << '\n';
+//   for (size_t i = 0; i < bodies.size()-1; i++) {
+//     vx_sun -= (bodies[i]->mass * bodies[i]->vx);
+//     vy_sun -= (bodies[i]->mass * bodies[i]->vy);
+//   }
+//   vx_sun /= solar_mass;
+//   vy_sun /= solar_mass;
+//   if (bodies[0]->name == "Sun") {
+//     bodies[0]->vx = vx_sun;
+//     bodies[0]->vy = vy_sun;
+//     std::cout << "Sun's new velocity: ";
+//     std::cout << "v = (" << vx_sun << ")i + (" << vy_sun << ")j" << " (m/s)\n";
+//   }
+// }
 
-void FixSunMomentum(Body_ctr bodies)
+void nullifyMergedParticles(Body_ctr& bodies)
 {
-  // Function that makes sure all initial momentum created in the system is constant
-  // So that the sun doesn't drift from the center of the simulation.
-  // the sun's momentum should balance all of the bodies in the solar system,
-  // so the total momentum is zero.
-  // p_sun + sum(p_i) = 0,  i = (1,N) for all N particles minus the sun.
-  // thus: p_sun = -sum(p_i)
-  // Vector equations:
-  // components: m_sun[(v_xs)i + (v_ys)j] = -sum(M_i[(v_xi)i + (v_yi)j])
-  double vx_sun = 0;
-  double vy_sun = 0;
-  std::cout << "Fixing Sun's momentum." << '\n';
-  for (size_t i = 0; i < bodies.size()-1; i++) {
-    vx_sun -= (bodies[i]->mass * bodies[i]->vx);
-    vy_sun -= (bodies[i]->mass * bodies[i]->vy);
-  }
-  vx_sun /= solar_mass;
-  vy_sun /= solar_mass;
-  if (bodies[0]->name == "Sun") {
-    bodies[0]->vx = vx_sun;
-    bodies[0]->vy = vy_sun;
-    std::cout << "Sun's new velocity: ";
-    std::cout << "v = (" << vx_sun << ")i + (" << vy_sun << ")j" << " (m/s)\n";
+  for (size_t i = 0; i < bodies.size(); i++) {
+    if (bodies[i]->type == 0 && bodies[i]->nulled == false) {
+      bodies[i]->vx = 0;
+      bodies[i]->vy = 0;
+      bodies[i]->rx = 0;
+      bodies[i]->ry = 0;
+      bodies[i]->nulled = true;
+      std::cout << "Nullified Particle: " << bodies[i] << '\n';
+    }
   }
 }

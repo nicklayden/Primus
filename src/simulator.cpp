@@ -1,3 +1,14 @@
+/**
+ * @Author: Nicholas Layden <nick>
+ * @Date:   2017-05-17T19:16:37-03:00
+ * @Email:  nicholas.layden@gmail.com
+ * @Filename: simulator.cpp
+ * @Last modified by:   nick
+ * @Last modified time: 2017-05-19T20:55:47-03:00
+ */
+
+
+
 /*
   Barnes hut simulator class cpp file
 
@@ -56,21 +67,23 @@ void Simulator::ForceSum(bool CheckTimestep)
   double mindt = std::numeric_limits<double>::max();
   #pragma omp parallel for
   for (uint i = 0; i < bodies.size(); i++) {
-    ScanNodeTree(MainNode, bodies[i]);
+    if (bodies[i]->type > 0) {
+      ScanNodeTree(MainNode, bodies[i]);
 
-    // calc accel and vel for each particle
-    accel = sqrt(bodies[i]->ax*bodies[i]->ax + bodies[i]->ay*bodies[i]->ay);
-    vel = sqrt(bodies[i]->vx*bodies[i]->vx + bodies[i]->vy*bodies[i]->vy);
+      // calc accel and vel for each particle
+      accel = sqrt(bodies[i]->ax*bodies[i]->ax + bodies[i]->ay*bodies[i]->ay);
+      vel = sqrt(bodies[i]->vx*bodies[i]->vx + bodies[i]->vy*bodies[i]->vy);
 
-    if (accel == 0) {
-      dt = std::numeric_limits<double>::max();
-    } else if (vel == 0) {
-      dt = 1.5e4/accel;
-    } else {
-      dt = 1e-1*vel/accel;
+      if (accel == 0) {
+        dt = std::numeric_limits<double>::max();
+      } else if (vel == 0) {
+        dt = 1.5e4/accel;
+      } else {
+        dt = 1e-1*vel/accel;
+      }
+      mindt = std::min(mindt,dt);
+      // mindt = std::max(mindt,hardmindt);
     }
-    mindt = std::min(mindt,dt);
-    mindt = std::max(mindt,hardmindt);
   }
   // update timestep for simulation.
   if (CheckTimestep) {
@@ -85,7 +98,6 @@ void Simulator::ForceSum(bool CheckTimestep)
       // std::cout << "Increased timestep size to: " << itimestep << std::endl;
     }
   }
-
 }
 
 void Simulator::AddForces(Particle* particle, NodeTree* node)
@@ -263,6 +275,8 @@ void Simulator::MergeParticles(Particle* p1, Particle* p2)
 
   // Delete p2 from the simulation (downgrade to null particle)
   p2->type = 0;
+  // delete p2;
+  // bodies.resize(bodies.size()-1);
 }
 
 void Simulator::SimulateForces(bool updatedt)

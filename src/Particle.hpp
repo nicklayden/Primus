@@ -36,6 +36,7 @@ class Particle
         double ay=0;
         double mass;
         double density;
+        bool nulled = false;
         short int type=2; //Particle type: 0 null (dead) 1 dust 2 planet 3 star
         // Only calculate forces between particles if the sum of their type is >2.
         // -> no dust-dust calculations.
