@@ -39,5 +39,5 @@ To run the program with default settings
 | -s (--softener) | float  | Softening parameter used to lower drastic effects arising from particles getting too close to each other.  |
 | -m (--stats)    | bool   | Dump simulation stats like Total Energy and Momentum and time to file. Frequency depends on -f flag        |
 | -f (--dumpfreq) | int    | Frequency with which to record data dumps. (1/steps)                                                       |
-| --fps           | float  | Set upper limit on framerate for the GUI. Default is unbounded                                             |
+| --fps           | float  | Set upper limit on framerate for the GUI. Default is unbounded. This also limits the maximum speed of the simulation                                             |
 | --draw          | bool   | Draw the Barnes-Hut node tree on the simulation window. Toggle on/off with the "A" key.                    |
