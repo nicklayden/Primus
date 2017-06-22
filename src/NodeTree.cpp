@@ -34,7 +34,7 @@ void NodeTree::generateChildren()
           } else {
               quad4.push_back(nodeBodies[i]); /// this is quad 4
           }
-      }
+      } 
   } /// end for
 
   /// Create new children Nodes out of each of the quadrants

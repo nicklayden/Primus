@@ -52,7 +52,6 @@ class Simulator
     double hardmindt = 86400;
     int timechanges = 0;
 
-
   private:
     void ScanNodeTree(NodeTree* node, Particle* particle);
     void AddForces(Particle* body, NodeTree* node);

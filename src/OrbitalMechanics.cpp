@@ -74,7 +74,7 @@ void SpawnSolarSystemPlanets(Body_ctr& bodies)
   Particle* Mars = new Particle(mars::aphelion*au,0,0,mars::v_aphelion,mars::mass,2);
   Mars->name = "Mars";
 
-  Particle* Sun = new Particle(0,0,0,0,solar_mass,solar_density);
+  Particle* Sun = new Particle(0,0,0,0,5*solar_mass,solar_density);
   // Sun->fixedPosition = true;
   Sun->name = "Sun";
 
@@ -83,8 +83,8 @@ void SpawnSolarSystemPlanets(Body_ctr& bodies)
 
   bodies.push_back(Sun);
   bodies.push_back(Earth);
-  bodies.push_back(Jupiter);
-  bodies.push_back(Mars);
+  // bodies.push_back(Jupiter);
+  // bodies.push_back(Mars);
 
 }
 

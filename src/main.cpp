@@ -278,11 +278,11 @@ int main(int argc, char** argv)
       simtimetext.setString(NumberToString("sim time:",simtimer,"s"));
       currentTimestep.setString(NumberToString("Current timestep:",simulation.itimestep,"s"));
       timeChanges.setString(NumberToString("Time changes:",simulation.timechanges,""));
-      maxchanges.setString(NumberToString("Suggested max timestep changes (sqrt(steps)):",sqrt(k),""));
+      // maxchanges.setString(NumberToString("Suggested max timestep changes (sqrt(steps)):",sqrt(k),""));
       // View the statistics on screen.
       if (displayStats) {
         window.setView(StatsView);
-        window.draw(maxchanges);
+        // window.draw(maxchanges);
         window.draw(currentTimestep);
         window.draw(timeChanges);
         window.draw(timer);
@@ -347,30 +347,6 @@ void singleLeap(Body_ctr bodies, double timestep)
   }
 }
 
-// void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
-// {
-//   // initializes particles in a uniform disk between r and r+dr
-//   // with masses m+dm, and velocities +/- 5000 m/s
-//   double rx, ry, radius, mass, angle, randomVel, randomVx, randomVy, angle2;
-//   for (size_t i = 0; i < Nrngparticles; i++) {
-//       // cout <<"\rSpawning particle " << i+1 << " out of " << Nrngparticles << "   ";
-//       // cout.flush();
-//       radius = unirandomval(r, r+dr);
-//       angle = unirandomval(0,2*pi);
-//       angle2 = unirandomval(0,2*pi);
-//       mass = unirandomval(mass_min, mass_max);
-//       randomVel = 30000*unirandomval(-1,1);
-//       // randomVx = randomVel*cos(angle2);
-//       // randomVy = randomVel*sin(angle2);
-//       randomVx = 0;
-//       randomVy = 0;
-//       rx = radius*cos(angle);
-//       ry = radius*sin(angle);
-//       Particle* obj = new Particle(rx,ry,randomVx,randomVy,mass,2000);
-//       bodies.push_back(obj);
-//    }
-// }
-//
 // void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
 // {
 //   // initializes particles in a uniform disk between r and r+dr
