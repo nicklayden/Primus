@@ -13,6 +13,15 @@ Mars, Earth, Sun, and Jupiter, as well as 10 "asteroid" sized particles.
 
 Gif was captured in real-time using Peek.
 
+## Dependencies
+This project uses Boost libraries for the command line interface, and the SFML library for the drawing window.
+You can install these libraries with
+
+```
+ sudo apt-get install libsfml-dev
+ sudo apt-get install libboost-dev
+```
+
 ## Installation
 Clone this repository
 ```
