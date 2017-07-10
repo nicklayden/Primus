@@ -32,9 +32,11 @@ EXEOBJS = $(addprefix $(OBJDIR)/, $(OBJS))
 primus: $(EXEOBJS)
 	$(CXX) -o primus $(EXEOBJS) $(CPPFLAGS)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | objdirmk
 		$(CXX) $(CPPFLAGS) -c $< -o $@
 
+objdirmk:
+	@mkdir -p OBJDIR
 # depend: .depend
 #
 # .depend: $(SRCDIR)/$(SRCS)
