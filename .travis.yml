@@ -1,6 +1,6 @@
-language: c++
+language: cxx
 
-compiler: g++
+compiler: gcc
 
 matrix:
   include:
