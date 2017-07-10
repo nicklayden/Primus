@@ -36,7 +36,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | objdirmk
 		$(CXX) $(CPPFLAGS) -c $< -o $@
 
 objdirmk:
-	@mkdir -p OBJDIR
+	@mkdir -p $(OBJDIR)
 # depend: .depend
 #
 # .depend: $(SRCDIR)/$(SRCS)
