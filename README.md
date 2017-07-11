@@ -7,8 +7,7 @@ Primus now uses SFML for real-time rendering of the simulation. It is built to b
 A CUDA accelerated version of the program will be added eventually. Currently, cuda is a bit of a nightmare to work with across systems.
 
 ## Example Outputs
-Just a small gif showing the underlying Barnes hut tree, along with the Particles in the simulation. This one includes:
-Mars, Earth, Sun, and Jupiter, as well as 10 "asteroid" sized particles.
+Window captures of the simulation with the GUI on. Simulation speed limited to 60 steps per second. All three examples show a solar system-like simulation, containing at least the Sun, the Earth, and a varying number of additional smaller mass (~10^18 kg) particles. 
 ![Small N](https://github.com/nicklayden/Primus/blob/master/smalln-notree-example.gif "Nbody Simulation")
 
 ![Small N](https://github.com/nicklayden/Primus/blob/master/smalln-example.gif "Nbody Simulation")
