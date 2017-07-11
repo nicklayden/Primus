@@ -9,9 +9,11 @@ A CUDA accelerated version of the program will be added eventually. Currently, c
 ## Example Outputs
 Just a small gif showing the underlying Barnes hut tree, along with the Particles in the simulation. This one includes:
 Mars, Earth, Sun, and Jupiter, as well as 10 "asteroid" sized particles.
-![alt text](https://github.com/nicklayden/Primus/blob/master/Peek%202017-05-15%2023-55.gif "Nbody Simulation")
+![Small N](https://github.com/nicklayden/Primus/blob/master/Peek%202017-05-15%2023-55.gif "Nbody Simulation")
 
-Gif was captured in real-time using Peek.
+![Large N](https://github.com/nicklayden/Primus/blob/master/peek-test-2.gif "Nbody Simulation")
+
+Gifs were captured in real-time using Peek (github.com/peek/peek).
 
 ## Dependencies
 This project uses Boost libraries for the command line interface, and the SFML library for the drawing window.
