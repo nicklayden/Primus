@@ -11,7 +11,9 @@ class Display
     Display(Simulator* simulation, sf::Font font);
     Display(sf::Font font);
     ~Display();
-    void MainLoop();
+    void MainLoop(std::vector<Particle*> bodies);
+
+    double particleSize = 6e9;
 
     bool showText = false;
     bool showStats = false;
@@ -30,6 +32,8 @@ class Display
     void GetBoxDimensions();
     void EnterNodeTree();
     void ProcessEvents(sf::Event event);
+    void DrawParticles(std::vector<Particle*>& bodies);
+
 
     int charsize = 12;
 

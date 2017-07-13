@@ -27,14 +27,14 @@ Display::~Display()
   std::cout << "Window destroyed." << std::endl;
 }
 
-void Display::MainLoop()
+void Display::MainLoop(std::vector<Particle*> bodies)
 {
   sf::Event event;
   ProcessEvents(event);
   window.clear(backgroundColour);
   // Draw commands here
 
-
+  DrawParticles(bodies);
   DrawText();
   // end draw commands
   window.display();
@@ -115,4 +115,20 @@ void Display::DrawText()
   window.draw(forcesperstep);
   window.draw(flopsTimer);
 
+}
+
+void Display::DrawParticles(std::vector<Particle*>& bodies)
+{
+  sf::CircleShape particle(particleSize); //units are scaled to the size of the viewport.
+  for (size_t i = 0; i < bodies.size(); i++) {
+    if (bodies[i]->type > 0) {
+      particle.setPosition(bodies[i]->rx, bodies[i]->ry);
+      if (bodies[i]->name == "basic") {
+        particle.setFillColor(sf::Color::Red);
+      } else {
+        particle.setFillColor(sf::Color::Yellow);
+      }
+      window.draw(particle);
+    }
+  }
 }
