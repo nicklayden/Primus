@@ -4,7 +4,7 @@ CXX= g++
 
 # source files for the program, along with object (.o) files (ext change only)
 SRCS := main.cpp NodeTree.cpp Particle.cpp simulator.cpp \
-        commandline.cpp gui.cpp OrbitalMechanics.cpp
+        commandline.cpp gui.cpp OrbitalMechanics.cpp display.cpp
 # SRC := main.cpp
 # SRCS := $(wildcard *.cpp)
 SRCDIR := src
@@ -37,6 +37,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | objdirmk
 
 objdirmk:
 	@mkdir -p $(OBJDIR)
+
+	
 # depend: .depend
 #
 # .depend: $(SRCDIR)/$(SRCS)
