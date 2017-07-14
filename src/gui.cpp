@@ -13,7 +13,7 @@ void DrawParticles(sf::RenderWindow* window, Body_ctr& bodies)
     if (bodies[i]->type > 0) {
       particle.setPosition(bodies[i]->rx, bodies[i]->ry);
       if (bodies[i]->name == "basic") {
-        particle.setFillColor(sf::Color::Red);
+        particle.setFillColor(sf::Color::White);
       } else {
         particle.setFillColor(sf::Color::Yellow);
       }
@@ -39,7 +39,7 @@ void DrawBoxes(sf::RenderWindow* window, std::vector<std::vector<double> > nodes
     boundingbox[4].position = sf::Vector2f(xmin, ymax);
 
     for (size_t i = 0; i < 5; i++) {
-      boundingbox[i].color = sf::Color::Green;
+      boundingbox[i].color = sf::Color::Red;
     }
     window->draw(boundingbox);
   }

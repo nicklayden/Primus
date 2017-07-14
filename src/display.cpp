@@ -15,9 +15,11 @@ Display::Display(Simulator* simulation, sf::Font font)
   }
 }
 
-Display::Display(sf::Font font)
-:font(font), window(sf::VideoMode(800,800), "test")
+Display::Display(sf::Font font, double w, double h)
+:font(font), window(sf::VideoMode(800,800), "test"), mainview(sf::Vector2f(0,0),sf::Vector2f(w,h))
 {
+  window.setPosition(sf::Vector2i(0,0));
+  window.setView(mainview);
   std::cout << "Display window created." << std::endl;
   std::cout << "Basic constructor called." << std::endl;
 }

@@ -10,6 +10,23 @@
     Have the moon and earth fixed at moon(0,au), and earth(moondist,au)
     Launch asteroids past the earth and moon system, track trajectories.
 
+
+
+
+  Custom install script for packaging the physics/numerics library into
+  a single import?? 
+
+  something like: create a custom main.cpp file, one that can 'swap' in 
+  or out with the makefile for compilation. ORRRR, precompile it as a header
+  ORRRRRRRRR, header library???
+
+  honestly these are all shit ideas, but maybe just for shits...
+
+
+
+
+
+
 */
 /*Standard libraries*/
 #include <vector>
@@ -112,7 +129,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  Display test(font);
+  Display test(font,w,h);
 
 
   textStep.setFont(font);
@@ -260,6 +277,8 @@ int main(int argc, char** argv)
       DrawParticles(&window,simulation.bodies);
       // window.draw(textStep);
       textStep.setString(NumberToString("Timestep:",k," "));
+
+      test.MainLoop(simulation.bodies);
 
       auto endtime = Clock::now();
       auto simtime = sc::duration_cast<std::chrono::milliseconds>(endtime-begintimeclock).count()/1e3;

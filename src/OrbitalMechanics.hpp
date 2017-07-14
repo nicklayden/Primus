@@ -18,6 +18,9 @@ void SpawnSolarSystemPlanets(Body_ctr& bodies);
 // Particle Disc Creators
 void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
 void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
+void makeGalacticDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
+void spawnBlackHole(Body_ctr& bodies, double mass, double x, double y, double vx, double vy);
+
 
 // Conserving Solar Momentum before simulation starts
 void FixSunMomentum(Body_ctr bodies);

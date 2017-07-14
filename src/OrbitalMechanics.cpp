@@ -133,6 +133,31 @@ void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, do
    }
 }
 
+void makeGalacticDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles)
+{
+  double rx, ry, radius, mass, angle, orbvel, vx, vy;
+  for (size_t i = 0; i < Nrngparticles; i++) {
+      // cout <<"\rSpawning particle " << i+1 << " out of " << Nrngparticles << "   ";
+      // cout.flush();
+      radius = unirandomval(r, r+dr);
+      angle = unirandomval(0,2*pi);
+      rx = radius*cos(angle);
+      ry = radius*sin(angle);
+      orbvel = CircularVelocity(G,solar_mass,radius);
+      vx = -orbvel*sin(angle);
+      vy = orbvel*cos(angle);
+      mass = unirandomval(mass_min, mass_max);
+      Particle* obj = new Particle(rx,ry,vx,vy,mass,2000);
+      bodies.push_back(obj);
+   }
+}
+
+void spawnBlackHole(Body_ctr& bodies, double mass, double x, double y, double vx, double vy)
+{
+  // spawn a black hole type of particle somewhere in the simulation
+  // should determine its schwarzschild radius as well. 
+}
+
 void FixSunMomentum(Body_ctr bodies)
 {
   // Function that makes sure all initial momentum created in the system is constant

@@ -9,7 +9,7 @@ class Display
 {
   public:
     Display(Simulator* simulation, sf::Font font);
-    Display(sf::Font font);
+    Display(sf::Font font, double w, double h);
     ~Display();
     void MainLoop(std::vector<Particle*> bodies);
 
