@@ -23,7 +23,7 @@ You can install these libraries with
 
 ```
  sudo apt-get install libsfml-dev
- sudo apt-get install libboost-dev
+ sudo apt-get install libboost-all-dev
 ```
 
 ## Installation
