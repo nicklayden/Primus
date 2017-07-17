@@ -83,7 +83,7 @@ void SpawnSolarSystemPlanets(Body_ctr& bodies)
 
   bodies.push_back(Sun);
   bodies.push_back(Earth);
-  // bodies.push_back(Jupiter);
+  bodies.push_back(Jupiter);
   // bodies.push_back(Mars);
 
 }

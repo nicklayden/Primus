@@ -64,6 +64,10 @@ void GetBoxDimensions(std::vector<std::vector<double> >& nodes, NodeTree* NODE);
 void nullifyMergedParticles(Body_ctr& bodies);
 /*Global parameters */
 
+/* Experimental Functions */
+// What a stupid fuckin name..
+sf::Vector2f CoordTransformSimulationToWindow(Particle* p, sf::RenderWindow* window, double w, double , double x, double y); 
+
 
 /*Namespace contamination*/
 using namespace constants;
@@ -108,7 +112,7 @@ int main(int argc, char** argv)
                       &softener, &MonitorStats, &dumpfrequency, &fpsmax, &drawNodes);
   /*--------------------------------------------------------------------------*/
   // Gui window parameters & setup
-  sf::RenderWindow window(sf::VideoMode(1080,1080), "N-Body Simulator");
+  sf::RenderWindow window(sf::VideoMode(1000,1000), "N-Body Simulator");
   sf::CircleShape temp(1e10);
   sf::View SimView(sf::Vector2f(0,0), sf::Vector2f(w,h));
   sf::View StatsView;
@@ -194,6 +198,13 @@ int main(int argc, char** argv)
   maxchanges.setColor(sf::Color::White);
   maxchanges.setPosition(0,96);
 
+  sf::Text earthposition;
+  sf::Vector2f earthPosPixels;
+  earthposition.setFont(font);
+  earthposition.setString("0");
+  earthposition.setCharacterSize(12);
+  earthposition.setColor(sf::Color::White);
+  earthposition.setPosition(0,96);
 
   /*--------------------------------------------------------------------------*/
   // File streams
@@ -211,12 +222,14 @@ int main(int argc, char** argv)
   // Fix solar momentum to conserve.
   FixSunMomentum(bodies);
 
+  CoordTransformSimulationToWindow(bodies[1],&window,w,h,x,y);
+
+
   // // Initialize Simulation object
   Simulator simulation(&GlobalNode,bodies,theta,timestep,G, softener,w,h,x,y);
   simulation.Parameters();
   // SFMLDisplay testwindow(&simulation, &font);
   /*--------------------------------------------------------------------------*/
-
   auto begintimeclock = Clock::now();
   while (window.isOpen()) {
     //Check window events that have occurred since the last iteration.
@@ -280,6 +293,11 @@ int main(int argc, char** argv)
 
       test.MainLoop(simulation.bodies);
 
+      // Get pixel position of a particle body.
+      earthPosPixels = CoordTransformSimulationToWindow(simulation.bodies[2],&window,w,h,x,y);
+      earthposition.setString(simulation.bodies[2]->name);
+      earthposition.setPosition(earthPosPixels.x,earthPosPixels.y);
+
       auto endtime = Clock::now();
       auto simtime = sc::duration_cast<std::chrono::milliseconds>(endtime-begintimeclock).count()/1e3;
       auto looptime = sc::duration_cast<std::chrono::milliseconds>(endtime-beginsimloop).count()/1e3;
@@ -303,6 +321,7 @@ int main(int argc, char** argv)
         window.draw(textStep);
         window.draw(forcesperstep);
         window.draw(flopsTimer);
+        window.draw(earthposition);
       }
       window.display();
       if (drawNodes) {
@@ -398,4 +417,34 @@ void nullifyMergedParticles(Body_ctr& bodies)
       std::cout << "Nullified Particle: " << bodies[i] << '\n';
     }
   }
+}
+
+sf::Vector2f CoordTransformSimulationToWindow(Particle* p, sf::RenderWindow* window, double w, double h, double x, double y)
+{
+  /* Transform coordinates from simulation coords (in physical units) to render window coordinates
+     (pixels)
+     Things we need:
+        - Position of the particle in question.
+        - The width and height of the initial simulation. NOT CURRENT WINDOW PARAMETERS
+          so, DON'T use w,h,x,y from "sim".
+        - The parameters of the drawing window (width and height)
+  */
+  // positions of the particle in the SIMULATION
+  sf::Vector2f simP(p->rx, p->ry);
+  sf::Vector2f winP; // Coordinates of the particle in window coord system.(pixels)
+
+  sf::Vector2u winSize = window->getSize();
+  
+  float pixperaux = winSize.x/w; // number of pixels per AU in X dimension
+  float pixperauy = winSize.y/h; // number of pixels per AU in Y dimension
+
+  winP.x = 0.5*winSize.x + pixperaux*simP.x;
+  winP.y = 0.5*winSize.y + pixperauy*simP.y;
+  
+  
+  // std::cout << "Window size: " << winSize.x << " " << winSize.y << std::endl; 
+  // std::cout << "Particle sim position: " << simP.x << " " << simP.y << std::endl;
+  // std::cout << "Particle win position: " << winP.x << " " << winP.y << std::endl;
+
+  return winP;
 }

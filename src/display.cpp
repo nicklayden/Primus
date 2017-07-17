@@ -134,3 +134,8 @@ void Display::DrawParticles(std::vector<Particle*>& bodies)
     }
   }
 }
+
+void Display::DrawSimulation()
+{
+  
+}

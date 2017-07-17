@@ -27,6 +27,7 @@ class Display
 
   private:
     Simulator* simulation;
+    void DrawSimulation();
     void DrawText();
     void Scatter();
     void GetBoxDimensions();
