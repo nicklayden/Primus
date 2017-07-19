@@ -14,9 +14,9 @@
 
 
   Custom install script for packaging the physics/numerics library into
-  a single import?? 
+  a single import??
 
-  something like: create a custom main.cpp file, one that can 'swap' in 
+  something like: create a custom main.cpp file, one that can 'swap' in
   or out with the makefile for compilation. ORRRR, precompile it as a header
   ORRRRRRRRR, header library???
 
@@ -66,7 +66,7 @@ void nullifyMergedParticles(Body_ctr& bodies);
 
 /* Experimental Functions */
 // What a stupid fuckin name..
-sf::Vector2f CoordTransformSimulationToWindow(Particle* p, sf::RenderWindow* window, double w, double , double x, double y); 
+sf::Vector2f CoordTransformSimulationToWindow(Particle* p, sf::RenderWindow* window, double w, double , double x, double y);
 
 
 /*Namespace contamination*/
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
     window.setFramerateLimit(fpsmax);
   }
 
-  
+
   /*--------------------------------------------------------------------------*/
   // Gui text overlay:
   std::vector<sf::Text*> textpointers;
@@ -216,8 +216,8 @@ int main(int argc, char** argv)
   Body_ctr bodies;
   SpawnSolarSystemPlanets(bodies);
   // InitDoubleBinarySystem(bodies);
-  makeCircularDisc(bodies,5.0*au,0.2*au,1e18,1e20,Nrngparticles);
-  makeCircularDisc(bodies,1.5*au,3.5*au,1e20,1.1e20,Nrngparticles);
+  makeCircularDisc(bodies,5.0*au,0.2*au,1e15,1e17,Nrngparticles);
+  makeCircularDisc(bodies,1.2*au,3.5*au,1e12,1.1e15,Nrngparticles);
   // initParticleDisk(bodies,2*au,8*au,1e18,1e20,Nrngparticles);
   // Fix solar momentum to conserve.
   FixSunMomentum(bodies);
@@ -256,7 +256,7 @@ int main(int argc, char** argv)
 
     /*------------------------------------------------------------------------*/
     test.MainLoop(simulation.bodies);
-    
+
     // Main simulation loop.
       auto beginsimloop = Clock::now();
       // Reset view to simulation boundary
@@ -434,15 +434,15 @@ sf::Vector2f CoordTransformSimulationToWindow(Particle* p, sf::RenderWindow* win
   sf::Vector2f winP; // Coordinates of the particle in window coord system.(pixels)
 
   sf::Vector2u winSize = window->getSize();
-  
+
   float pixperaux = winSize.x/w; // number of pixels per AU in X dimension
   float pixperauy = winSize.y/h; // number of pixels per AU in Y dimension
 
   winP.x = 0.5*winSize.x + pixperaux*simP.x;
   winP.y = 0.5*winSize.y + pixperauy*simP.y;
-  
-  
-  // std::cout << "Window size: " << winSize.x << " " << winSize.y << std::endl; 
+
+
+  // std::cout << "Window size: " << winSize.x << " " << winSize.y << std::endl;
   // std::cout << "Particle sim position: " << simP.x << " " << simP.y << std::endl;
   // std::cout << "Particle win position: " << winP.x << " " << winP.y << std::endl;
 

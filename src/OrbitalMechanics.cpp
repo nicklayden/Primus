@@ -84,7 +84,7 @@ void SpawnSolarSystemPlanets(Body_ctr& bodies)
   bodies.push_back(Sun);
   bodies.push_back(Earth);
   bodies.push_back(Jupiter);
-  // bodies.push_back(Mars);
+  bodies.push_back(Mars);
 
 }
 
@@ -101,10 +101,10 @@ void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, do
       angle2 = unirandomval(0,2*pi);
       mass = unirandomval(mass_min, mass_max);
       randomVel = 30000*unirandomval(-1,1);
-      // randomVx = randomVel*cos(angle2);
-      // randomVy = randomVel*sin(angle2);
-      randomVx = 0;
-      randomVy = 0;
+      randomVx = randomVel*cos(angle2);
+      randomVy = randomVel*sin(angle2);
+      // randomVx = 0;
+      // randomVy = 0;
       rx = radius*cos(angle);
       ry = radius*sin(angle);
       Particle* obj = new Particle(rx,ry,randomVx,randomVy,mass,2000);
@@ -127,6 +127,7 @@ void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, do
       orbvel = CircularVelocity(G,solar_mass,radius);
       vx = -orbvel*sin(angle);
       vy = orbvel*cos(angle);
+      // vx=0;vy=0;
       mass = unirandomval(mass_min, mass_max);
       Particle* obj = new Particle(rx,ry,vx,vy,mass,2000);
       bodies.push_back(obj);
@@ -155,7 +156,7 @@ void makeGalacticDisc(Body_ctr& bodies, double r, double dr, double mass_min, do
 void spawnBlackHole(Body_ctr& bodies, double mass, double x, double y, double vx, double vy)
 {
   // spawn a black hole type of particle somewhere in the simulation
-  // should determine its schwarzschild radius as well. 
+  // should determine its schwarzschild radius as well.
 }
 
 void FixSunMomentum(Body_ctr bodies)

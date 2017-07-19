@@ -4,7 +4,7 @@
  * @Email:  nicholas.layden@gmail.com
  * @Filename: simulator.cpp
  * @Last modified by:   nick
- * @Last modified time: 2017-05-19T20:55:47-03:00
+ * @Last modified time: 2017-07-18T22:15:38-03:00
  */
 
 
@@ -276,6 +276,8 @@ void Simulator::MergeParticles(Particle* p1, Particle* p2)
   // Delete p2 from the simulation (downgrade to null particle)
   p2->type = 0;
   // delete p2;
+  bodies.erase(std::remove(bodies.begin(),bodies.end(), p2), bodies.end());
+  p2->~Particle();
   // bodies.resize(bodies.size()-1);
 }
 

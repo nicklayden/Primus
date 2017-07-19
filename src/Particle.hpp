@@ -28,6 +28,8 @@ class Particle
         :rx(rx), ry(ry),vx(vx),vy(vy),mass(mass),density(density)
         {}
 
+        ~Particle() {}
+
         void resetAcceleration();
         double rx, ry;
         double vx, vy;
