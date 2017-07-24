@@ -81,7 +81,7 @@ int main(int argc, char** argv)
   // Setup simulation parameters. DEFAULT VALUES!
   NodeTree GlobalNode;
   float theta = 0.5;
-  double timestep = 86400;
+  double timestep = 86400/3;
   double G = mks_universal_G;
   float softener = 100000;
   double TotalEnergy,PE,KE;
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  Display test(font,w,h);
+  // Display test(font,w,h);
 
 
   textStep.setFont(font);
@@ -215,14 +215,27 @@ int main(int argc, char** argv)
   // Initialize particles in the container.
   Body_ctr bodies;
   SpawnSolarSystemPlanets(bodies);
+
+  // test particle.
+  // Particle* testparticle = new Particle(-3*au,3*au,1e15,2000);
+  // double angle = pi/4.0; // angle is 45 degrees at (3,3).
+  // double rap = au*sqrt(18.0);
+  // std::vector<double> velocity = eccentricityTilt(G,solar_mass,rap,0.9,angle);
+  // testparticle->vx = velocity[0];
+  // testparticle->vy = velocity[1];
+  // std::cout << *testparticle;
+  // bodies.push_back(testparticle);
+  makeVariableEccentricity(bodies,4*au,1*au,1e15,1e16,0.2,0.3, Nrngparticles);
+
   // InitDoubleBinarySystem(bodies);
-  makeCircularDisc(bodies,5.0*au,0.2*au,1e15,1e17,Nrngparticles);
-  makeCircularDisc(bodies,1.2*au,3.5*au,1e12,1.1e15,Nrngparticles);
+  // makeCircularDisc(bodies,5.0*au,0.2*au,1e15,1e17,Nrngparticles);
+  // makeCircularDisc(bodies,1.2*au,3.5*au,1e12,1.1e15,Nrngparticles);
   // initParticleDisk(bodies,2*au,8*au,1e18,1e20,Nrngparticles);
   // Fix solar momentum to conserve.
   FixSunMomentum(bodies);
 
-  CoordTransformSimulationToWindow(bodies[1],&window,w,h,x,y);
+  // Plots text of a particle's name next to it as it moves.
+  // CoordTransformSimulationToWindow(bodies[4],&window,w,h,x,y);
 
 
   // // Initialize Simulation object
@@ -255,7 +268,7 @@ int main(int argc, char** argv)
     } // end event check
 
     /*------------------------------------------------------------------------*/
-    test.MainLoop(simulation.bodies);
+    // test.MainLoop(simulation.bodies);
 
     // Main simulation loop.
       auto beginsimloop = Clock::now();
@@ -264,11 +277,11 @@ int main(int argc, char** argv)
       window.clear(sf::Color::Black);
       /*-Integration steps-*/
       simulation.SimulateForces(true);
-      VerletStepOne(simulation.bodies, simulation.itimestep, simulation.bodies.size());
+      VerletStepOne(simulation.bodies, timestep, simulation.bodies.size());
       simulation.SimulateForces(false);
       forcesperstep.setString(NumberToString("Forces per step:",simulation.forceCounter,""));
       flop = simulation.forceCounter;
-      VerletStepTwo(simulation.bodies, simulation.itimestep, simulation.bodies.size());
+      VerletStepTwo(simulation.bodies, timestep, simulation.bodies.size());
       // Check particles with type=0 and zero all parameters.
       // nullifyMergedParticles(bodies);
       // Energy Monitoring
@@ -291,12 +304,12 @@ int main(int argc, char** argv)
       // window.draw(textStep);
       textStep.setString(NumberToString("Timestep:",k," "));
 
-      test.MainLoop(simulation.bodies);
+      // test.MainLoop(simulation.bodies);
 
       // Get pixel position of a particle body.
-      earthPosPixels = CoordTransformSimulationToWindow(simulation.bodies[2],&window,w,h,x,y);
-      earthposition.setString(simulation.bodies[2]->name);
-      earthposition.setPosition(earthPosPixels.x,earthPosPixels.y);
+      // earthPosPixels = CoordTransformSimulationToWindow(simulation.bodies[2],&window,w,h,x,y);
+      // earthposition.setString(simulation.bodies[2]->name);
+      // earthposition.setPosition(earthPosPixels.x,earthPosPixels.y);
 
       auto endtime = Clock::now();
       auto simtime = sc::duration_cast<std::chrono::milliseconds>(endtime-begintimeclock).count()/1e3;
@@ -321,7 +334,7 @@ int main(int argc, char** argv)
         window.draw(textStep);
         window.draw(forcesperstep);
         window.draw(flopsTimer);
-        window.draw(earthposition);
+        // window.draw(earthposition);
       }
       window.display();
       if (drawNodes) {

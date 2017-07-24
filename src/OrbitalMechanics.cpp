@@ -26,6 +26,25 @@ double aphelionVelocity(double G, double msun, double rap, double e)
     return sqrt(G*msun*(1.0-e)/rap);
 }
 
+std::vector<double> eccentricityTilt(double G, double msun, double rap, double e, double angle)
+{
+  // Pick e,r,theta for particle.
+  // theta is the positon in space wrt the origin the initial position is.
+  // r is the radius of the orbit.
+  // e is eccentricity.
+  // Calculate the aphelion velocity for this orbit that is not 'aligned'
+  // to an axis.
+  // Store the resulting velocity vector in a vector, as x, and y components
+  double vap = aphelionVelocity(G,msun,rap,e);
+  double vx, vy;
+  vx = -cos(angle)*vap;
+  vy = sin(angle)*vap;
+  std::vector<double> velocity;
+  velocity.push_back(vx); velocity.push_back(vy);
+  return velocity;
+}
+
+
 std::vector<double> tiltedAphelion(double vap, double angle)
 {
   // Calculates the vx and vy of a particle at a given d,e and angle.
@@ -83,8 +102,8 @@ void SpawnSolarSystemPlanets(Body_ctr& bodies)
 
   bodies.push_back(Sun);
   bodies.push_back(Earth);
-  bodies.push_back(Jupiter);
-  bodies.push_back(Mars);
+  // bodies.push_back(Jupiter);
+  // bodies.push_back(Mars);
 
 }
 
@@ -152,6 +171,30 @@ void makeGalacticDisc(Body_ctr& bodies, double r, double dr, double mass_min, do
       bodies.push_back(obj);
    }
 }
+
+void makeVariableEccentricity(Body_ctr& bodies, double r, double dr, double mass_max, double mass_min, double e_min, double e_max, uint Nrngparticles)
+{
+  double rx, ry, radius, mass, angle, vx, vy, e;
+  std::vector<double> orbvel;
+  for (size_t i = 0; i < Nrngparticles; i++) {
+      // Random properties.
+      radius = unirandomval(r, r+dr);
+      angle = unirandomval(0,2*pi);
+      mass = unirandomval(mass_min, mass_max);
+      e = unirandomval(e_min,e_max);
+
+      // Orbital parameters from random properties.
+      rx = radius*cos(angle);
+      ry = radius*sin(angle);
+      orbvel = eccentricityTilt(G,solar_mass,radius,e,angle);
+      vx = -orbvel[0]*sin(angle);
+      vy = orbvel[1]*cos(angle);
+      Particle* obj = new Particle(rx,ry,vx,vy,mass,2000);
+      bodies.push_back(obj);
+   }
+}
+
+
 
 void spawnBlackHole(Body_ctr& bodies, double mass, double x, double y, double vx, double vy)
 {

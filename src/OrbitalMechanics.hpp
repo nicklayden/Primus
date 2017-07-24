@@ -11,6 +11,7 @@ double aphelionVelocity(double G, double msun, double rap, double e);
 std::vector<double> tiltedAphelion(double vap, double angle);
 std::vector<double> tiltedPerihelion(double vperi, double angle);
 double CircularVelocity(double G, double msun, double r);
+std::vector<double> eccentricityTilt(double G, double msun, double rperi, double e, double angle);
 
 // Solar system initialization
 void SpawnSolarSystemPlanets(Body_ctr& bodies);
@@ -20,7 +21,7 @@ void initParticleDisk(Body_ctr& bodies, double r, double dr, double mass_min, do
 void makeCircularDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
 void makeGalacticDisc(Body_ctr& bodies, double r, double dr, double mass_min, double mass_max, uint Nrngparticles);
 void spawnBlackHole(Body_ctr& bodies, double mass, double x, double y, double vx, double vy);
-
+void makeVariableEccentricity(Body_ctr& bodies, double r, double dr, double mass_max, double mass_min, double e_min, double e_max, uint Nrngparticles);
 
 // Conserving Solar Momentum before simulation starts
 void FixSunMomentum(Body_ctr bodies);
