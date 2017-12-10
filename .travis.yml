@@ -2,6 +2,8 @@ language: cxx
 
 compiler: gcc
 
+os: osx
+
 addons:
   apt:
     sources:
